@@ -52,7 +52,7 @@ class LSTM(nn.Module):
         self.lstm = nn.LSTM(input_size, hidden_layer_size) 
 
     def forward(self, input_seq):
-        lstm_out, self.hidden_cell = self.lstm(input_seq.view(len(input_seq), -1, -1), self.hidden_cell)
+        lstm_out, self.hidden_cell = self.lstm(input_seq.view(len(input_seq), 1, -1), self.hidden_cell)
         predictions = self.linear(lstm_out.view(len(input_seq), -1))
         return predictions[-1]
 
@@ -63,7 +63,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
 print(model)
 
 epochs = 150
-for i in tqdm(range(epochs)):
+for i in tqdm.tqdm(range(epochs)):
     for seq, labels in train_inout_seq:
         optimizer.zero_grad()
         # 将优化器中的所有梯度清零,在每次进行参数更新之前，调用这个方法来清除之前的梯度信息，避免梯度累积
