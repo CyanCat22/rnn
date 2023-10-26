@@ -8,6 +8,7 @@ rnn参数共享
 h=a(wh+wh+b)
 存储时序信息
 """
+
 batch_size, num_steps = 32, 35
 train_iter, vocab = d2l.load_data_time_machine(batch_size, num_steps)
 num_hiddens = 256

@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
-
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import tqdm
+
 # 图形可视库
 flight_data = sns.load_dataset("flights")
 # print(flight_data.head())
@@ -20,8 +20,8 @@ train_data_size = 120
 
 train_data = all_data[:-test_data_size]
 test_data = all_data[-test_data_size:]
-print(len(train_data))
-print(len(test_data))
+print(len(train_data)) # 132
+print(len(test_data)) # 12
 
 # 数据归一化(-1,1)
 from sklearn.preprocessing import MinMaxScaler
@@ -29,8 +29,10 @@ scaler = MinMaxScaler(feature_range=(-1, 1))
 train_data_normalized = scaler.fit_transform(train_data.reshape(-1,1))
 # 转化为一维张量,view(-1) -1自动计算该维度大小
 train_data_normalized = torch.FloatTensor(train_data_normalized).view(-1)
+
 # 设置训练输入序列滑动窗口长度为12
 train_window = 12
+# 创建输入输出序列
 def creat_inout_sequences(input_data, train_window):
 # 接受原始输入数据，并返回一个元组列表
     inout_seq = [] 
@@ -40,15 +42,16 @@ def creat_inout_sequences(input_data, train_window):
         train_label = input_data[i+train_window:i+train_window+1]
         inout_seq.append((train_seq, train_label))
     return inout_seq
+    # 每个元组包含一个输入序列和一个对应的标签
 
 train_inout_seq = creat_inout_sequences(train_data_normalized, train_window)
+
 
 # 继承自PyTorch库的nn.Module类
 class LSTM(nn.Module):
     def __init__(self, input_size=1, hidden_layer_size=100, output_size=1):
         super().__init__()
         self.hidden_layer_size = hidden_layer_size
-
         self.lstm = nn.LSTM(input_size, hidden_layer_size) 
 
     def forward(self, input_seq):
@@ -56,11 +59,19 @@ class LSTM(nn.Module):
         predictions = self.linear(lstm_out.view(len(input_seq), -1))
         return predictions[-1]
 
+
 model = LSTM()
 model.add_module('linear', nn.Linear(100,1))
 loss_function = nn.MSELoss() # 交叉熵损失
-optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr = 0.001) # Adam随机优化方法
 print(model)
+
+"""
+LSTM(
+  (lstm): LSTM(1, 100)
+  (linear): Linear(in_features=100, out_features=1, bias=True)
+)
+"""
 
 epochs = 150
 for i in tqdm.tqdm(range(epochs)):

@@ -18,12 +18,27 @@ print(lines[0])
 print(lines[5])
 
 def tokenize(lines, token='word'):
+    """词元化---每个文本序列被拆分为一个词元列表"""
     if token == 'word':
         return [line.split() for line in lines]
     elif token == 'char':
         return [list(line) for line in lines]
     
 tokens = tokenize(lines)
-for i in range(20):
+for i in range(5):
     print(tokens[i])
+
+class Vocab():
+    """词表---将字符串词元映射到从后0开始的数字索引中"""
+    """得到的统计结果称之为语料corpus"""
+    """未知词元<unk> 填充词元<pad> 序列开始词元<bos> 结束词元<eos>"""
+    def __init__(self, tokens=None, min_freq=0, reserved_tokens=None):
+        if tokens is None:
+            tokens = []
+        if reserved_tokens is None:
+            reserved_tokens = []
+        # 按出现频率
+        
+
+
 

@@ -87,11 +87,11 @@ def predict_train(prefix, num_preds, net, vocab, device):
     for  y in prefix[1:]: # 预热期
         _, state = net(get_input(), state)
         outputs.append(vocab[y])
+        
     for _ in range(num_preds):
         y, state = net(get_input(), state)
         outputs.append(int(y.argmax(dim=1).reshape(1)))
     return ''.join([vocab.idx_to_token[i] for i in outputs])
-
 predict_train('time traveller', 10, net, vocab, d2l.try_gpu())
 
 def grad_clipping(net, theta):
@@ -136,7 +136,6 @@ def train_epoch(net, train_iter, loss,
             updater(batch_size=1)
         metric.add(l*y.numel(), y.numel())
     return math.exp(metric[0] / metric[1]), metric[1] / timer.stop()
-
 
 
 def train(net, train_iter, vocab, lr, num_epochs, device,
